@@ -61,7 +61,7 @@ jobs:
     name: Deploy to Dev
     runs-on: windows-latest
     needs: build
-    if: github.ref == 'refs/heads/develop' || inputs.environment == 'dev'
+    if: github.ref == 'refs/heads/dev' || inputs.environment == 'dev'
     environment: dev
     steps:
       - uses: actions/download-artifact@v4
@@ -78,7 +78,7 @@ jobs:
     name: Deploy to QA
     runs-on: windows-latest
     needs: build
-    if: startsWith(github.ref, 'refs/heads/release/') || inputs.environment == 'qa'
+    if: github.ref == 'refs/heads/qa' || inputs.environment == 'qa'
     environment: qa
     steps:
       - uses: actions/download-artifact@v4
