@@ -31,4 +31,5 @@ jobs:
           dotnet-version: '6.0.x'
 
       - name: Restore dependencies
+        working-directory: StudentWebApi
         run: dotnet restore
