@@ -1,0 +1,92 @@
+
+name: .NET Core
+
+on:  
+  push:
+    branches:
+      - main
+      - dev
+      - qa
+      - prod
+      
+  pull_request:
+    branches:
+      - main
+      - dev
+      - qa
+      - prod
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+jobs:
+
+  build:
+    name: Build .NET 6 Application
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 6 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        working-directory: StudentWebApi
+        run: dotnet restore
+
+      - name: Build solution      
+        working-directory: StudentWebApi
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish application
+        working-directory: StudentWebApi
+        run: dotnet publish -c Release -o publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: student-app
+          path: StudentWebApi/publish/
+
+  deploy-dev:
+    name: Deploy to Dev
+    runs-on: windows-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop' || inputs.environment == 'dev'
+    environment: dev
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dotnet-app
+
+      - name: Deploy Dev
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.DEV_CONNECTION_STRING }}
+        run: |
+          echo "Deploying .NET 8 app to DEV"
+
+  deploy-qa:
+    name: Deploy to QA
+    runs-on: windows-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/heads/release/') || inputs.environment == 'qa'
+    environment: qa
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dotnet-app
+
+      - name: Deploy QA
+        env:
+          ConnectionStrings__DefaultConnection: ${{ secrets.QA_CONNECTION_STRING }}
+        run: |
+          echo "Deploying .NET 8 app to QA"
