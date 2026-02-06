@@ -7,14 +7,13 @@ on:
       - main
       - dev
       - qa
-      - prod
       
   pull_request:
     branches:
       - main
       - dev
       - qa
-      - prod
+
   workflow_dispatch:
     inputs:
       environment:
@@ -22,9 +21,9 @@ on:
         required: true
         type: choice
         options:
+          - main
           - dev
           - qa
-          - prod
 jobs:
 
   build:
@@ -66,7 +65,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: dotnet-app
+          name: student-app
 
       - name: Deploy Dev
         env:
@@ -83,7 +82,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: dotnet-app
+          name: student-app
 
       - name: Deploy QA
         env:
