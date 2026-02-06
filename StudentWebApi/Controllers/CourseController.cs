@@ -7,7 +7,7 @@ using Services;
 namespace StudentWebApi.Controllers
 {
     [ApiController]
-    [Route("Course")]
+    [Route("CourseDev")]
     public class CourseController : Controller
     {
         private readonly ICourseService _courseService;
