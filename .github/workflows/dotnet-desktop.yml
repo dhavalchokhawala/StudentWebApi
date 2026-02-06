@@ -33,3 +33,17 @@ jobs:
       - name: Restore dependencies
         working-directory: StudentWebApi
         run: dotnet restore
+
+      - name: Build solution      
+        working-directory: StudentWebApi
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish application
+        working-directory: StudentWebApi
+        run: dotnet publish -c Release -o publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-app
+          path: publish/
